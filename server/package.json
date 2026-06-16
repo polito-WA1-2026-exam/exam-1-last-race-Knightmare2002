@@ -1,15 +1,28 @@
 {
-  "name": "server",
+  "name": "last-race-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Web Application Exam",
   "license": "ISC",
   "author": "",
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "init-db": "node utils/initDB.js"
   },
   "dependencies": {
-    "express": "^5.2.1"
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "morgan": "^1.11.0",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
+    "sqlite3": "^6.0.1"
+  },
+  "keywords": [],
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
