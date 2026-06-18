@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+
+/* =========================================
+   REGOLE APPLICATE SOLO IN DARK THEME
+   ========================================= */
+
+body.dark-theme {
+  background-color: #11141a;
+  color: #f8f9fa;
+}
+
+body.dark-theme h1 .text-primary,
+body.dark-theme .table .text-primary {
+  color: #f5b700 !important; 
+}
+
+/* Bottoni */
+body.dark-theme .btn-primary {
+  background-color: #f5b700 !important;
+  border-color: #f5b700 !important;
+  color: #11141a !important;
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+body.dark-theme .btn-primary:hover, 
+body.dark-theme .btn-primary:focus {
+  background-color: #d19c00 !important;
+  border-color: #d19c00 !important;
+}
+
+body.dark-theme .btn-outline-secondary {
+  border-color: #6c757d !important;
+  color: #ced4da !important;
+}
+
+body.dark-theme .btn-outline-secondary:hover {
+  background-color: #6c757d !important;
+  color: #fff !important;
+}
+
+/* Navbar */
+body.dark-theme .navbar {
+  background-color: #11141a !important;
+}
+
+body.dark-theme .navbar-brand {
+  font-family: 'Space Mono', monospace;
+  color: #f8f9fa !important;
+}
+
+/* Testi e Card */
+body.dark-theme .text-muted, 
+body.dark-theme .text-secondary {
+  color: #9ca3af !important; 
+}
+
+body.dark-theme p.text-uppercase.text-muted {
+  font-family: 'Space Mono', monospace;
+  color: #f5b700 !important;
+  letter-spacing: 3px !important;
+}
+
+body.dark-theme .card {
+  background-color: #1c212b !important;
+  border: none !important;
+}
+
+body.dark-theme .card.border-primary { border-left: 4px solid #0d6efd !important; }
+body.dark-theme .card.border-warning { border-left: 4px solid #f5b700 !important; }
+body.dark-theme .card.border-success { border-left: 4px solid #198754 !important; }
+body.dark-theme .card.border-danger  { border-left: 4px solid #dc3545 !important; }
+
+body.dark-theme .card-title, 
+body.dark-theme .card-text {
+  color: #f8f9fa !important;
+}
+
+/* Tabella Leaderboard */
+body.dark-theme .table {
+  color: #212529 !important;
+}
+
+body.dark-theme .table-light th {
+  background-color: #f8f9fa !important;
+  color: #6c757d !important;
+  font-family: 'Space Mono', monospace;
+}
+
+body.dark-theme .table-primary td {
+  background-color: #dbeafe !important; 
+}
+
+/* =========================================
+   TESTI E LINK NAVBAR IN DARK MODE
+   ========================================= */
+body.dark-theme .navbar .nav-link,
+body.dark-theme .navbar .navbar-text {
+  color: #f8f9fa !important; /* Bianco/grigio chiaro */
+}
+
+/* Effetto hover (giallo) per i link cliccabili */
+body.dark-theme .navbar .nav-link:hover {
+  color: #f5b700 !important; 
+}
+
+/* =========================================
+   TOP 3 LEADERBOARD (Medaglie e Background)
+   ========================================= */
+
+/* Sfondi per le righe */
+.table-gold td {
+  background-color: #fff8cc !important; /* Giallo chiaro */
+}
+.table-silver td {
+  background-color: #f2f2f2 !important; /* Grigio chiaro */
+}
+.table-bronze td {
+  background-color: #ffe8d6 !important; /* Arancione/Bronzo chiaro */
+}
+
+/* Colori accesi per le icone */
+.icon-gold {
+  color: #ffc107; /* Giallo Bootstrap */
+  font-size: 1.1rem;
+}
+.icon-silver {
+  color: #9ca3af; /* Grigio metallico */
+  font-size: 1.1rem;
+}
+.icon-bronze {
+  color: #cd7f32; /* Color bronzo standard */
+  font-size: 1.1rem;
+}

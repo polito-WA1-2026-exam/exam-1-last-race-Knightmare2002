@@ -71,26 +71,41 @@ function LeaderboardPage() {
                   <th className="py-3 px-4 text-muted text-end">BEST SCORE</th>
                 </tr>
               </thead>
-              <tbody>
-                {ranking.map((player, index) => {
-                  const isCurrentUser = player.username === user?.username
-                  
-                  return (
-                    <tr key={player.username} className={isCurrentUser ? 'table-primary' : ''}>
-                      <td className="py-3 px-4 fw-bold">{index + 1}</td>
-                      <td className="py-3 px-4">
-                        {player.username}
-                        {isCurrentUser && (
-                          <Badge bg="primary" className="ms-2">You</Badge>
-                        )}
-                      </td>
-                      <td className="py-3 px-4 text-end fw-bold text-primary">
-                        {player.best_score}
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
+                <tbody>
+                  {ranking.map((player, index) => {
+                    const isCurrentUser = player.username === user?.username;
+                    
+                    let rowClass = ''
+                    if (index === 0) rowClass = 'table-gold'
+                    else if (index === 1) rowClass = 'table-silver'
+                    else if (index === 2) rowClass = 'table-bronze'
+                    else if (isCurrentUser) rowClass = 'table-primary' 
+
+                    return (
+                      <tr key={player.username} className={rowClass}>
+                        
+                        <td className="py-3 px-4 fw-bold">
+                          {index + 1}
+                          {index === 0 && <i className="bi bi-trophy-fill icon-gold ms-2"></i>}
+                          {index === 1 && <i className="bi bi-trophy-fill icon-silver ms-2"></i>}
+                          {index === 2 && <i className="bi bi-trophy-fill icon-bronze ms-2"></i>}
+                        </td>
+                        
+                        <td className="py-3 px-4">
+                          {player.username}
+                          {isCurrentUser && (
+                            <Badge bg="primary" className="ms-2 shadow-sm">You</Badge>
+                          )}
+                        </td>
+                        
+                        <td className="py-3 px-4 text-end fw-bold text-primary">
+                          {player.best_score}
+                        </td>
+                        
+                      </tr>
+                    )
+                  })}
+                </tbody>
             </Table>
           </div>
 

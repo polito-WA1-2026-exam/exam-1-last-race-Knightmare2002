@@ -11,14 +11,14 @@ function LandingPage() {
       
       {/* --- HERO SECTION --- */}
       <p className="text-uppercase text-muted fw-bold mb-2" style={{ letterSpacing: '2px' }}>
-        Underground Network Game
+        Milano Network Game
       </p>
       <h1 className="display-3 fw-bold mb-3">
         Race the <span className="text-primary">Rails</span>
       </h1>
       <p className="lead text-secondary mx-auto mb-5" style={{ maxWidth: '600px' }}>
-        Navigate a fictional underground network, plan your route against
-        the clock, and survive random events — all before time runs out.
+        Navigate a real-world metro network, plan your route against
+        the clock, and survive random events from this hostile enviroment — all before time and luck run out.
       </p>
 
       {isLoggedIn ? (
