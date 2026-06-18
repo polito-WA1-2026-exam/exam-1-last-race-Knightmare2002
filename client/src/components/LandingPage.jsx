@@ -1,106 +1,101 @@
-import { useContext } from 'react';
 import { Link } from 'react-router';
-import { Container, Row, Col, Button, Card } from 'react-bootstrap';
+import { Container, Button, Row, Col, Card, Alert } from 'react-bootstrap';
+import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import '../App.css';
 
 function LandingPage() {
   const { isLoggedIn } = useContext(AuthContext);
 
   return (
-    <Container fluid className="landing-page px-0">
-      <Container className="hero-section py-5 text-center">
-        <Row className="justify-content-center">
-          <Col lg={8}>
-            <p className="hero-eyebrow">
-              Underground Network Game
-            </p>
+    <Container className="py-5 text-center">
+      
+      {/* --- HERO SECTION --- */}
+      <p className="text-uppercase text-muted fw-bold mb-2" style={{ letterSpacing: '2px' }}>
+        Underground Network Game
+      </p>
+      <h1 className="display-3 fw-bold mb-3">
+        Race the <span className="text-primary">Rails</span>
+      </h1>
+      <p className="lead text-secondary mx-auto mb-5" style={{ maxWidth: '600px' }}>
+        Navigate a fictional underground network, plan your route against
+        the clock, and survive random events — all before time runs out.
+      </p>
 
-            <h1 className="hero-title">
-              Race the <span>Rails</span>
-            </h1>
+      {isLoggedIn ? (
+        <Button as={Link} to="/home" variant="primary" size="lg" className="px-5 rounded-pill shadow-sm">
+          Go to Dashboard
+        </Button>
+      ) : (
+        <Button as={Link} to="/login" variant="primary" size="lg" className="px-5 rounded-pill shadow-sm">
+          Log in to Play
+        </Button>
+      )}
 
-            <p className="hero-subtitle">
-              Navigate a fictional underground network, plan your route against
-              the clock, and survive random events before time runs out.
-            </p>
+      {/* --- INSTRUCTIONS SECTION --- */}
+      <section className="mt-5 pt-4 text-start">
+        <h2 className="h6 text-muted text-uppercase fw-bold mb-4 text-center">
+          How to Play
+        </h2>
 
-            <Button
-              as={Link}
-              to={isLoggedIn ? '/home' : '/login'}
-              className="hero-button"
-            >
-              {isLoggedIn ? 'Go to Dashboard' : 'Log in to Play'}
-            </Button>
-          </Col>
-        </Row>
-      </Container>
-
-      <Container className="instructions-section pb-4">
-        <p className="instructions-label">
-          How to play
-        </p>
-
-        <Row className="g-4">
+        
+        <Row className="g-4 mb-5">
           <Col md={6} lg={3}>
-            <Card className="step-card step-blue h-100">
+            <Card className="h-100 border-primary border-top-0 border-end-0 border-bottom-0 border-4 shadow-sm bg-light">
               <Card.Body>
-                <div className="step-number">01</div>
-                <Card.Title as="h3">Setup</Card.Title>
-                <Card.Text>
-                  Study the full network map — learn every station and line before the clock starts.
+                <div className="text-primary fw-bold fs-4 mb-2">01</div>
+                <Card.Title>Setup</Card.Title>
+                <Card.Text className="text-muted">
+                  Study the full network map before the clock starts.
                 </Card.Text>
               </Card.Body>
             </Card>
           </Col>
 
           <Col md={6} lg={3}>
-            <Card className="step-card step-yellow h-100">
+            <Card className="h-100 border-warning border-top-0 border-end-0 border-bottom-0 border-4 shadow-sm bg-light">
               <Card.Body>
-                <div className="step-number">02</div>
-                <Card.Title as="h3">Plan</Card.Title>
-                <Card.Text>
-                  You have 90 seconds to build a route from your start to your destination using the segments list.
+                <div className="text-warning fw-bold fs-4 mb-2">02</div>
+                <Card.Title>Plan</Card.Title>
+                <Card.Text className="text-muted">
+                  You have 90 seconds to build a route using the available segments.
                 </Card.Text>
               </Card.Body>
             </Card>
           </Col>
 
           <Col md={6} lg={3}>
-            <Card className="step-card step-green h-100">
+            <Card className="h-100 border-success border-top-0 border-end-0 border-bottom-0 border-4 shadow-sm bg-light">
               <Card.Body>
-                <div className="step-number">03</div>
-                <Card.Title as="h3">Execute</Card.Title>
-                <Card.Text>
-                  Your route is validated and each segment triggers a random event that earns or loses coins.
+                <div className="text-success fw-bold fs-4 mb-2">03</div>
+                <Card.Title>Execute</Card.Title>
+                <Card.Text className="text-muted">
+                  Each segment triggers a random event that earns or loses coins.
                 </Card.Text>
               </Card.Body>
             </Card>
           </Col>
 
           <Col md={6} lg={3}>
-            <Card className="step-card step-red h-100">
+            <Card className="h-100 border-danger border-top-0 border-end-0 border-bottom-0 border-4 shadow-sm bg-light">
               <Card.Body>
-                <div className="step-number">04</div>
-                <Card.Title as="h3">Result</Card.Title>
-                <Card.Text>
-                  Your final coin count is your score. Invalid or incomplete routes score zero.
+                <div className="text-danger fw-bold fs-4 mb-2">04</div>
+                <Card.Title>Result</Card.Title>
+                <Card.Text className="text-muted">
+                  The final number of coins is your score. Invalid routes score zero.
                 </Card.Text>
               </Card.Body>
             </Card>
           </Col>
         </Row>
 
-        <Card className="note-card mt-4">
-          <Card.Body>
-            <span className="note-label">NOTE:</span> You start each game with 20 coins.
-            A valid route executes segment by segment. An invalid or incomplete route
-            costs you all coins — score: 0.
-          </Card.Body>
-        </Card>
-      </Container>
+        <Alert variant="info" className="shadow-sm">
+          <strong>NOTE:</strong> You start every game with <strong>20 coins</strong>. A valid route executes segment by segment.
+          An invalid or incomplete route gives a score of 0.
+        </Alert>
+      </section>
+      
     </Container>
-  );
+  )
 }
 
-export default LandingPage;
+export default LandingPage
