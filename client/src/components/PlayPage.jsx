@@ -90,14 +90,6 @@ function PlayPage() {
     return a < b ? `${a}-${b}` : `${b}-${a}`
   }
 
-  {/* Helper function  to understand orientation*/}
-  const getCurrentRouteEndStationId = () => {
-    if (selectedSegments.length === 0) {
-      return planningData?.startStation?.id ?? null
-    }
-
-    return selectedSegments[selectedSegments.length - 1].toStationId;
-  }
 
   {/* Every segment must be selected only once */}
   const handleAddSegment = (segment) => {
