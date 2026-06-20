@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Container, Spinner, Alert, Card, Row, Col, Badge, ListGroup, Button } from 'react-bootstrap';
 import gameAPI from '../API/gameAPI';
 
+import ExecutionPage from './ExecutionPage';
+
 function PlayPage() {
   const [game, setGame] = useState(null);
   const [planningData, setPlanningData] = useState(null);
@@ -14,33 +16,38 @@ function PlayPage() {
   const [submitting, setSubmitting] = useState(false);
   const [timeLeft, setTimeLeft] = useState(null);
 
+
 {/* Starting the game */}
+const fetchGameData = async () => {
+    try {
+      setLoading(true)
+      const map = await gameAPI.getNetworkMap()
+      const newGame = await gameAPI.createGame()
+      const planning = await gameAPI.getPlanningData(newGame.gameId)
+
+      setNetworkMap(map)
+      setGame(newGame)
+      setPlanningData(planning)
+    } catch (err) {
+      setErrorMsg(err.message || 'Failed to load game')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  //Botstraping game
   useEffect(() => {
-    const bootstrapGame = async () => {
-      try {
-        const map = await gameAPI.getNetworkMap();
-        const newGame = await gameAPI.createGame();
-        const planning = await gameAPI.getPlanningData(newGame.gameId)
-
-        {/* Just some debugging tools */}
-        console.log('MAP', map)
-        console.log('GAME', newGame)
-        console.log('PLANNING', planning)
-        //=================================
-
-        setNetworkMap(map)
-        setGame(newGame)
-        setPlanningData(planning)
-      } catch (err) {
-        setErrorMsg(err.message || 'Failed to load game')
-      } finally {
-        setLoading(false)
-      }
-
-    };
-
-    bootstrapGame()
+    fetchGameData()
   }, [])
+
+  // "Create New Game" Button function
+  const handleCreateNewGame = () => {
+    setPhase('setup')
+    setSelectedSegments([])
+    setSubmitResult(null)
+    setTimeLeft(null)
+    fetchGameData()
+  }
 
 {/* Countdown */}
 useEffect(() => {
@@ -159,11 +166,41 @@ useEffect(() => {
       const result = await gameAPI.submitRoute(game.gameId, routeStationIds)
 
       setSubmitResult(result)
+
+      setPhase('execution')
+      
     } catch (err) {
       setErrorMsg(err.message || 'Failed to submit route');
     } finally {
       setSubmitting(false)
     }
+  }
+
+  {/* Obtain stations name */}
+  const getStationName = (id) => {
+    if (!networkMap?.stations) return id
+      const station = networkMap.stations.find((s) => s.id === id)
+      return station ? station.name : id
+    }
+  
+  {/* Execution*/}
+  if (phase === 'execution') {
+    return (
+      <ExecutionPage 
+        submitResult={submitResult} 
+        getStationName={getStationName}
+        game={game}
+        selectedSegments={selectedSegments}
+        routeStationIds={buildRouteStationIds()}
+        onReplay={() => {
+          setPhase('setup')
+          setSelectedSegments([])
+          setSubmitResult(null)
+          setTimeLeft(null)
+        }} 
+        onCreateNew={handleCreateNewGame}
+      />
+    )
   }
 
   return (
@@ -184,9 +221,9 @@ useEffect(() => {
             Setup ready
         </Badge>
           ) : (
-            <Badge bg="info" pill className="px-3 py-2 shadow-sm fs-6 mb-3">
+            <Badge bg="warning" pill className="px-3 py-2 shadow-sm fs-6 mb-3">
               Planning Phase
-          </Badge>
+            </Badge>
           )
         }
       </Container>
@@ -269,11 +306,22 @@ useEffect(() => {
                         </div>
 
                         <div className="text-muted small lh-lg">
-                          {(networkMap?.lineStations || [])
-                            .filter((ls) => ls.line_id === line.id)
-                            .map((ls) => ls.station_name)
-                            .join(' — ') || 'No stations available for this line.'
-                          }
+                          {(() => {
+                            const stations = (networkMap?.lineStations || [])
+                              .filter((ls) => ls.line_id === line.id)
+                              .map((ls) => ls.station_name);
+
+                            if (stations.length === 0) return 'No stations available for this line.'
+
+                            return stations.map((name, idx) => (
+                              <span key={idx}>
+                                {name}
+                                {idx < stations.length - 1 && (
+                                  <i className="bi bi-arrow-left-right mx-2 text-secondary"></i>
+                                )}
+                              </span>
+                            ))
+                          })()}
                         </div>
                       </Card.Body>
                     </Card>
@@ -364,7 +412,7 @@ useEffect(() => {
                               <Card.Body className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                 <div>
                                   <strong>
-                                    {segment.fromStationName} — {segment.toStationName}
+                                    {segment.fromStationName} <i className="bi bi-arrow-left-right mx-2 text-secondary"></i> {segment.toStationName}
                                   </strong>
                                 </div>
 
@@ -407,7 +455,9 @@ useEffect(() => {
                             className="d-flex justify-content-between align-items-center"
                           >
                             <span>
-                              {index + 1}. {segment.fromStationName} — {segment.toStationName}
+                              <span className="text-muted fw-bold me-2">{index + 1}.</span> 
+
+                              {segment.fromStationName} <i className="bi bi-arrow-left-right mx-2 text-primary"></i> {segment.toStationName}
                             </span>
                           </ListGroup.Item>
                         ))}
@@ -449,35 +499,7 @@ useEffect(() => {
         </div>
         ) 
       }
-
-      {submitResult && !submitResult.valid && (
-        <Alert variant="danger" className="mt-3">
-          Invalid route. Final score: {submitResult.finalScore}
-          {submitResult.reason ? ` (${submitResult.reason})` : ''}
-        </Alert>
-        )
-      }
-      {submitResult && submitResult.valid && (
-        <Card className="mt-3">
-          <Card.Body>
-            <Card.Title>Execution Preview</Card.Title>
-            <p>Final score: {submitResult.finalScore}</p>
-
-            <ListGroup variant="flush">
-              {submitResult.steps.map((step) => (
-                <ListGroup.Item key={step.stepIndex}>
-                  Step {step.stepIndex}: {step.fromStationId} → {step.toStationId} |
-                  {` ${step.event.description} `}({step.event.effect >= 0 ? '+' : ''}{step.event.effect}) |
-                  Coins: {step.coinsAfterStep}
-                </ListGroup.Item>
-              ))}
-            </ListGroup>
-          </Card.Body>
-        </Card>
-        )
-      }
-      
-
+  
     </Container>
   )
 }
