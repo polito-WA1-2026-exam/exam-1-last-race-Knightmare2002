@@ -12,8 +12,9 @@ function PlayPage() {
   const [selectedSegments, setSelectedSegments] = useState([]);
   const [submitResult, setSubmitResult] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(null);
 
-
+{/* Starting the game */}
   useEffect(() => {
     const bootstrapGame = async () => {
       try {
@@ -40,6 +41,29 @@ function PlayPage() {
 
     bootstrapGame()
   }, [])
+
+{/* Countdown */}
+useEffect(() => {
+  if (phase !== 'planning' || !planningData?.timeLimitSeconds || submitResult || submitting) {
+    return
+  }
+
+  if (timeLeft === null) {
+    setTimeLeft(planningData.timeLimitSeconds);
+    return
+  }
+
+  if (timeLeft === 0) {
+    handleSubmitRoute()
+    return
+  }
+
+  const timerId = setTimeout(() => {
+    setTimeLeft((current) => current - 1)
+  }, 1000)
+
+  return () => clearTimeout(timerId)
+}, [phase, planningData, timeLeft, submitResult, submitting])
 
   if (loading) {
     return (
@@ -125,6 +149,8 @@ function PlayPage() {
 
   {/* Submit */}
   const handleSubmitRoute = async () => {
+    if (submitting || submitResult) return
+
     try {
       setSubmitting(true)
       setErrorMsg('')
@@ -185,7 +211,17 @@ function PlayPage() {
             </Col>
             <Col sm={6} md={4}>
               <div className="text-muted small fw-bold text-uppercase">Planning Time</div>
-              <div className="fs-5">{planningData?.timeLimitSeconds} s</div>
+              <div 
+                className={`fs-5 fw-bold ${
+                  phase === 'planning' 
+                    ? (timeLeft <= 10 ? 'text-danger animate-pulse' : 'text-success')
+                    : ''
+                }`}
+              >
+                {phase === 'planning' && timeLeft !== null 
+                  ? `${timeLeft} s remaining` 
+                  : `${planningData?.timeLimitSeconds ?? '--'} s`}
+              </div>
             </Col>
             <Col sm={6} md={4}>
               <div className="text-muted small fw-bold text-uppercase">Stations</div>
@@ -387,7 +423,7 @@ function PlayPage() {
                   <Button
                     variant="success"
                     onClick={handleSubmitRoute}
-                    disabled={submitting || selectedSegments.length === 0}
+                    disabled={submitting || !!submitResult || selectedSegments.length === 0}
                   >
                     {submitting ? 'Submitting...' : 'Submit Route'}
                   </Button>
@@ -406,7 +442,7 @@ function PlayPage() {
             variant="warning" 
             size="lg" 
             className="px-5 rounded-pill shadow-sm fw-bold"
-            onClick={() => setPhase('planning')}
+            onClick={() => {setPhase('planning'); setTimeLeft(planningData?.timeLimitSeconds ?? 90)}}
           >
             Start Planning
           </Button>

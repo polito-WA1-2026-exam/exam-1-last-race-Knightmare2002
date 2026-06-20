@@ -140,3 +140,16 @@ body.dark-theme .navbar .nav-link:hover {
   color: #cd7f32; 
   font-size: 1.1rem;
 }
+
+/* =========================================
+   Timer
+   ========================================= */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.animate-pulse {
+  animation: pulse 1s infinite;
+}
