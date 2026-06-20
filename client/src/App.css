@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
 
 /* =========================================
-   REGOLE APPLICATE SOLO IN DARK THEME
+   RULES FOR THE DARK THEME
    ========================================= */
 
 body.dark-theme {
@@ -14,7 +14,7 @@ body.dark-theme .table .text-primary {
   color: #f5b700 !important; 
 }
 
-/* Bottoni */
+/* Buttons */
 body.dark-theme .btn-primary {
   background-color: #f5b700 !important;
   border-color: #f5b700 !important;
@@ -51,7 +51,7 @@ body.dark-theme .navbar-brand {
   color: #f8f9fa !important;
 }
 
-/* Testi e Card */
+/* Texts & Cards */
 body.dark-theme .text-muted, 
 body.dark-theme .text-secondary {
   color: #9ca3af !important; 
@@ -66,6 +66,7 @@ body.dark-theme p.text-uppercase.text-muted {
 body.dark-theme .card {
   background-color: #1c212b !important;
   border: none !important;
+  color: #f8f9fa !important;
 }
 
 body.dark-theme .card.border-primary { border-left: 4px solid #0d6efd !important; }
@@ -78,7 +79,7 @@ body.dark-theme .card-text {
   color: #f8f9fa !important;
 }
 
-/* Tabella Leaderboard */
+/* Leaderboard */
 body.dark-theme .table {
   color: #212529 !important;
 }
@@ -94,43 +95,42 @@ body.dark-theme .table-primary td {
 }
 
 /* =========================================
-   TESTI E LINK NAVBAR IN DARK MODE
+   TEXTS & LINK NAVBAR IN DARK MODE
    ========================================= */
 body.dark-theme .navbar .nav-link,
 body.dark-theme .navbar .navbar-text {
   color: #f8f9fa !important; /* Bianco/grigio chiaro */
 }
 
-/* Effetto hover (giallo) per i link cliccabili */
+/* Hover on links */
 body.dark-theme .navbar .nav-link:hover {
   color: #f5b700 !important; 
 }
 
 /* =========================================
-   TOP 3 LEADERBOARD (Medaglie e Background)
+   TOP 3 LEADERBOARD
    ========================================= */
 
-/* Sfondi per le righe */
+/* Rows background */
 .table-gold td {
-  background-color: #fff8cc !important; /* Giallo chiaro */
+  background-color: #fff8cc !important;
 }
 .table-silver td {
-  background-color: #f2f2f2 !important; /* Grigio chiaro */
+  background-color: #f2f2f2 !important;
 }
 .table-bronze td {
-  background-color: #ffe8d6 !important; /* Arancione/Bronzo chiaro */
+  background-color: #ffe8d6 !important; 
 }
 
-/* Colori accesi per le icone */
 .icon-gold {
-  color: #ffc107; /* Giallo Bootstrap */
+  color: #ffc107; 
   font-size: 1.1rem;
 }
 .icon-silver {
-  color: #9ca3af; /* Grigio metallico */
+  color: #9ca3af; 
   font-size: 1.1rem;
 }
 .icon-bronze {
-  color: #cd7f32; /* Color bronzo standard */
+  color: #cd7f32; 
   font-size: 1.1rem;
 }
