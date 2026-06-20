@@ -10,6 +10,8 @@ function PlayPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [phase, setPhase] = useState('setup');
   const [selectedSegments, setSelectedSegments] = useState([]);
+  const [submitResult, setSubmitResult] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
 
   useEffect(() => {
@@ -58,30 +60,92 @@ function PlayPage() {
     )
   }
 
+  {/* Understands the orientation of each segment */}
+  const buildRouteStationIds = () => {
+    if (selectedSegments.length === 0 || !planningData?.startStation?.id) {
+      return []
+    }
+
+    const routeStationIds = [planningData.startStation.id]
+    let currentStationId = planningData.startStation.id
+
+    for (const segment of selectedSegments) {
+      if (segment.fromStationId === currentStationId) {
+        routeStationIds.push(segment.toStationId)
+        currentStationId = segment.toStationId
+      } else if (segment.toStationId === currentStationId) {
+        routeStationIds.push(segment.fromStationId)
+        currentStationId = segment.fromStationId
+      } else {
+        routeStationIds.push(segment.fromStationId, segment.toStationId);
+        currentStationId = segment.toStationId
+      }
+    }
+
+    return routeStationIds
+  }
+
+  {/*Impose that a - b === b - a*/}
+  const normalizeSegmentKey = (a, b) => {
+    return a < b ? `${a}-${b}` : `${b}-${a}`
+  }
+
+  {/* Helper function  to understand orientation*/}
+  const getCurrentRouteEndStationId = () => {
+    if (selectedSegments.length === 0) {
+      return planningData?.startStation?.id ?? null
+    }
+
+    return selectedSegments[selectedSegments.length - 1].toStationId;
+  }
+
   {/* Every segment must be selected only once */}
   const handleAddSegment = (segment) => {
-    const alreadySelected = selectedSegments.some(
-      (s) =>
-        s.fromStationId === segment.fromStationId &&
-        s.toStationId === segment.toStationId
+    const segmentKey = normalizeSegmentKey(
+      segment.fromStationId,
+      segment.toStationId
     )
 
-    if (alreadySelected) return
+    const alreadySelected = selectedSegments.some(
+      (s) =>
+        normalizeSegmentKey(s.fromStationId, s.toStationId) === segmentKey
+    )
+
+    if (alreadySelected) return;
 
     setSelectedSegments([...selectedSegments, segment])
   }
 
   {/* Delete selected segments */}
   const handleRemoveSegment = (segmentToRemove) => {
+    const segmentKeyToRemove = normalizeSegmentKey(
+      segmentToRemove.fromStationId,
+      segmentToRemove.toStationId
+    )
+    
     setSelectedSegments((current) =>
       current.filter(
         (segment) =>
-          !(
-            segment.fromStationId === segmentToRemove.fromStationId &&
-            segment.toStationId === segmentToRemove.toStationId
-          )
+           normalizeSegmentKey(segment.fromStationId, segment.toStationId) !== segmentKeyToRemove
       )
     )
+  }
+
+  {/* Submit */}
+  const handleSubmitRoute = async () => {
+    try {
+      setSubmitting(true)
+      setErrorMsg('')
+
+      const routeStationIds = buildRouteStationIds();
+      const result = await gameAPI.submitRoute(game.gameId, routeStationIds)
+
+      setSubmitResult(result)
+    } catch (err) {
+      setErrorMsg(err.message || 'Failed to submit route');
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -222,6 +286,7 @@ function PlayPage() {
 
       </Row>) : (
           <Container className='px-0'>
+            {/*All Stations */}
             <Row className="mb-4">
               <Col lg={12}>
                 <Card className="shadow-sm border-0 bg-light">
@@ -249,11 +314,12 @@ function PlayPage() {
                 </Card>
               </Col>
             </Row>
-
+            
+            {/* Available Segments + Current Route */}
             <Row>
               {/* Segments */}
               <Col lg={7}>
-                <Card bg="dark" text="light">
+                <Card className="shadow-sm border-0 h-100 bg-light">
                   <Card.Body>
                     <Card.Title className="mb-3">Available Segments</Card.Title>
 
@@ -262,12 +328,11 @@ function PlayPage() {
                         {planningData.segments.map((segment, index) => {
                           const alreadySelected = selectedSegments.some(
                             (s) =>
-                              s.fromStationId === segment.fromStationId &&
-                              s.toStationId === segment.toStationId
-                          );
+                              normalizeSegmentKey(s.fromStationId, s.toStationId) === normalizeSegmentKey(segment.fromStationId, segment.toStationId)
+                          )
 
                           return (
-                            <Card key={index} bg="secondary" text="light">
+                            <Card key={index} className="border-0 shadow-sm bg-white">
                               <Card.Body className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                 <div>
                                   <strong>
@@ -288,7 +353,7 @@ function PlayPage() {
                                 </Button>
                               </Card.Body>
                             </Card>
-                          );
+                          )
                         })}
                       </div>
                     ) : (
@@ -302,7 +367,7 @@ function PlayPage() {
 
               {/* Current Route */}
               <Col lg={5}>
-                <Card bg="dark" text="light">
+                <Card className="shadow-sm border-0 h-100 bg-light">
                   <Card.Body>
                     <Card.Title className="mb-3">Current Route</Card.Title>
 
@@ -326,6 +391,15 @@ function PlayPage() {
                     )}
                   </Card.Body>
                 </Card>
+                <div className="d-flex justify-content-center mt-4">
+                  <Button
+                    variant="success"
+                    onClick={handleSubmitRoute}
+                    disabled={submitting || selectedSegments.length === 0}
+                  >
+                    {submitting ? 'Submitting...' : 'Submit Route'}
+                  </Button>
+                </div>
               </Col>
             </Row>
           </Container>
@@ -336,17 +410,44 @@ function PlayPage() {
       {/* Go to planning phase */}
       {phase === 'setup' && (
         <div className="d-flex justify-content-center mt-5 mb-3">
-        <Button 
-          variant="warning" 
-          size="lg" 
-          className="px-5 rounded-pill shadow-sm fw-bold"
-          onClick={() => setPhase('planning')}
-        >
-          Start Planning
-        </Button>
-      </div>
-      ) 
-    }
+          <Button 
+            variant="warning" 
+            size="lg" 
+            className="px-5 rounded-pill shadow-sm fw-bold"
+            onClick={() => setPhase('planning')}
+          >
+            Start Planning
+          </Button>
+        </div>
+        ) 
+      }
+
+      {submitResult && !submitResult.valid && (
+        <Alert variant="danger" className="mt-3">
+          Invalid route. Final score: {submitResult.finalScore}
+          {submitResult.reason ? ` (${submitResult.reason})` : ''}
+        </Alert>
+        )
+      }
+      {submitResult && submitResult.valid && (
+        <Card className="mt-3">
+          <Card.Body>
+            <Card.Title>Execution Preview</Card.Title>
+            <p>Final score: {submitResult.finalScore}</p>
+
+            <ListGroup variant="flush">
+              {submitResult.steps.map((step) => (
+                <ListGroup.Item key={step.stepIndex}>
+                  Step {step.stepIndex}: {step.fromStationId} → {step.toStationId} |
+                  {` ${step.event.description} `}({step.event.effect >= 0 ? '+' : ''}{step.event.effect}) |
+                  Coins: {step.coinsAfterStep}
+                </ListGroup.Item>
+              ))}
+            </ListGroup>
+          </Card.Body>
+        </Card>
+        )
+      }
       
 
     </Container>
