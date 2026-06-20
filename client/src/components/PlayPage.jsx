@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Container, Spinner, Alert, Card, Row, Col } from 'react-bootstrap';
+import { Container, Spinner, Alert, Card, Row, Col, Badge, ListGroup } from 'react-bootstrap';
 import gameAPI from '../API/gameAPI';
 
 function PlayPage() {
@@ -16,6 +16,12 @@ function PlayPage() {
         const newGame = await gameAPI.createGame();
         const planning = await gameAPI.getPlanningData(newGame.gameId)
 
+        {/* Just some debugging tools */}
+        console.log('MAP', map)
+        console.log('GAME', newGame)
+        console.log('PLANNING', planning)
+        //=================================
+
         setNetworkMap(map)
         setGame(newGame)
         setPlanningData(planning)
@@ -24,6 +30,7 @@ function PlayPage() {
       } finally {
         setLoading(false)
       }
+
     };
 
     bootstrapGame()
@@ -35,7 +42,7 @@ function PlayPage() {
         <Spinner animation="border" variant="primary" />
         <p className="mt-3 text-muted">Loading game...</p>
       </Container>
-    );
+    )
   }
 
   if (errorMsg) {
@@ -56,6 +63,13 @@ function PlayPage() {
         Phase 01 / 02
       </p>
       <h1 className="display-5 fw-bold mb-4">Game Loaded</h1>
+      <h3 className="text-secondary mb-4">
+        Study the complete network before moving to the planning phase.
+      </h3>
+      <Badge bg="primary" pill className="px-3 py-2 shadow-sm fs-6 mb-3">
+          Setup ready
+      </Badge>
+
 
       {/* Summary Grid */}
       <Card className="shadow-sm border-0 bg-light mb-4">
@@ -90,14 +104,83 @@ function PlayPage() {
         </Card.Body>
       </Card>
 
-      {/* Placeholder */}
-      <Card className="border-0 shadow-sm text-center p-5 text-muted" style={{ borderStyle: 'dashed !important', backgroundColor: '#fdfdfd' }}>
-        <Card.Body>
-          <p className="mb-0">
-            <em>Setup and planning UI will be mounted here in the next step.</em>
-          </p>
-        </Card.Body>
-      </Card>
+      {/* Map & Stations */}
+      <Row className="g-4">
+        
+        {/*Lines*/}
+        <Col lg={8}>
+          <Card className="shadow-sm border-0 h-100 bg-light">
+            <Card.Body className="p-4">
+              <Card.Title className="text-primary fw-bold mb-4">Network Map</Card.Title>
+
+              {Array.isArray(networkMap?.lines) && networkMap.lines.length > 0 ? (
+                <div className="d-flex flex-column gap-3">
+                  {networkMap.lines.map((line) => (
+                    
+                    <Card key={line.id} className="border-0 shadow-sm bg-white">
+                      <Card.Body>
+                        <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                          <strong className="fs-5">{line.name}</strong>
+
+                          {line.color && (
+                            <Badge
+                              pill
+                              style={{
+                                backgroundColor: line.color,
+                                color: '#fff', 
+                                textShadow: '0 0 2px rgba(0,0,0,0.5)' 
+                              }}
+                            >
+                              {line.color}
+                            </Badge>
+                          )}
+                        </div>
+
+                        <div className="text-muted small lh-lg">
+                          {(networkMap?.lineStations || [])
+                            .filter((ls) => ls.line_id === line.id)
+                            .map((ls) => ls.station_name)
+                            .join(' — ') || 'No stations available for this line.'
+                          }
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <Alert variant="secondary" className="mb-0">
+                  No line data available.
+                </Alert>
+              )}
+            </Card.Body>
+          </Card>
+        </Col>
+
+        {/* Stations */}
+        <Col lg={4}>
+          <Card className="shadow-sm border-0 h-100 bg-light">
+            <Card.Body className="p-4">
+              <Card.Title className="text-primary fw-bold mb-4">All Stations</Card.Title>
+
+              {Array.isArray(networkMap?.stations) && networkMap.stations.length > 0 ? (
+                <ListGroup variant="flush" className="rounded shadow-sm">
+                  {networkMap.stations.map((station) => (
+                    <ListGroup.Item key={station.id} className="bg-white border-bottom">
+                      <i className="bi bi-geo-alt-fill text-muted me-2"></i>
+                      <span className="fw-bold">{station.name}</span>
+                    </ListGroup.Item>
+                  ))}
+                </ListGroup>
+              ) : (
+                <Alert variant="secondary" className="mb-0">
+                  No station data available.
+                </Alert>
+              )}
+            </Card.Body>
+          </Card>
+        </Col>
+
+      </Row>
       
     </Container>
   )
