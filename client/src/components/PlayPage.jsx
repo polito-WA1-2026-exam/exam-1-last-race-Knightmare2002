@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Container, Spinner, Alert, Card, Row, Col, Badge, ListGroup } from 'react-bootstrap';
+import { Container, Spinner, Alert, Card, Row, Col, Badge, ListGroup, Button } from 'react-bootstrap';
 import gameAPI from '../API/gameAPI';
 
 function PlayPage() {
@@ -8,6 +8,9 @@ function PlayPage() {
   const [networkMap, setNetworkMap] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
+  const [phase, setPhase] = useState('setup');
+  const [selectedSegments, setSelectedSegments] = useState([]);
+
 
   useEffect(() => {
     const bootstrapGame = async () => {
@@ -55,21 +58,57 @@ function PlayPage() {
     )
   }
 
+  {/* Every segment must be selected only once */}
+  const handleAddSegment = (segment) => {
+    const alreadySelected = selectedSegments.some(
+      (s) =>
+        s.fromStationId === segment.fromStationId &&
+        s.toStationId === segment.toStationId
+    )
+
+    if (alreadySelected) return
+
+    setSelectedSegments([...selectedSegments, segment])
+  }
+
+  {/* Delete selected segments */}
+  const handleRemoveSegment = (segmentToRemove) => {
+    setSelectedSegments((current) =>
+      current.filter(
+        (segment) =>
+          !(
+            segment.fromStationId === segmentToRemove.fromStationId &&
+            segment.toStationId === segmentToRemove.toStationId
+          )
+      )
+    )
+  }
+
   return (
     <Container className="py-5">
       
       {/* Header */}
-      <p className="text-uppercase text-muted fw-bold mb-1" style={{ letterSpacing: '1px' }}>
+      <Container>
+        <p className="text-uppercase text-muted fw-bold mb-1" style={{ letterSpacing: '1px' }}>
         Phase 01 / 02
-      </p>
-      <h1 className="display-5 fw-bold mb-4">Game Loaded</h1>
-      <h3 className="text-secondary mb-4">
-        Study the complete network before moving to the planning phase.
-      </h3>
-      <Badge bg="primary" pill className="px-3 py-2 shadow-sm fs-6 mb-3">
-          Setup ready
-      </Badge>
+        </p>
+        <h1 className="display-5 fw-bold mb-4">Game Loaded</h1>
+        <h3 className="text-secondary mb-4">
+          Study the complete network before moving to the planning phase.
+        </h3>
 
+        {phase === 'setup' ? (
+          <Badge bg="primary" pill className="px-3 py-2 shadow-sm fs-6 mb-3">
+            Setup ready
+        </Badge>
+          ) : (
+            <Badge bg="info" pill className="px-3 py-2 shadow-sm fs-6 mb-3">
+              Planning Phase
+          </Badge>
+          )
+        }
+      </Container>
+      
 
       {/* Summary Grid */}
       <Card className="shadow-sm border-0 bg-light mb-4">
@@ -105,7 +144,8 @@ function PlayPage() {
       </Card>
 
       {/* Map & Stations */}
-      <Row className="g-4">
+      {phase === 'setup' ?(
+        <Row className="g-4">
         
         {/*Lines*/}
         <Col lg={8}>
@@ -180,8 +220,135 @@ function PlayPage() {
           </Card>
         </Col>
 
-      </Row>
+      </Row>) : (
+          <Container className='px-0'>
+            <Row className="mb-4">
+              <Col lg={12}>
+                <Card className="shadow-sm border-0 bg-light">
+                  <Card.Body className="p-4">
+                    <Card.Title className="text-primary fw-bold mb-3">All Stations</Card.Title>
+
+                    {Array.isArray(networkMap?.stations) && networkMap.stations.length > 0 ? (
+                      <ListGroup className="flex-row flex-wrap gap-2 border-0">
+                        {networkMap.stations.map((station) => (
+                          <ListGroup.Item 
+                            key={station.id} 
+                            className="bg-white border rounded shadow-sm d-flex align-items-center px-3 py-2 w-auto"
+                          >
+                            <i className="bi bi-geo-alt-fill text-muted me-2"></i>
+                            <span className="fw-bold">{station.name}</span>
+                          </ListGroup.Item>
+                        ))}
+                      </ListGroup>
+                    ) : (
+                      <Alert variant="secondary" className="mb-0">
+                        No station data available.
+                      </Alert>
+                    )}
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+
+            <Row>
+              {/* Segments */}
+              <Col lg={7}>
+                <Card bg="dark" text="light">
+                  <Card.Body>
+                    <Card.Title className="mb-3">Available Segments</Card.Title>
+
+                    {Array.isArray(planningData?.segments) && planningData.segments.length > 0 ? (
+                      <div className="d-flex flex-column gap-2">
+                        {planningData.segments.map((segment, index) => {
+                          const alreadySelected = selectedSegments.some(
+                            (s) =>
+                              s.fromStationId === segment.fromStationId &&
+                              s.toStationId === segment.toStationId
+                          );
+
+                          return (
+                            <Card key={index} bg="secondary" text="light">
+                              <Card.Body className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div>
+                                  <strong>
+                                    {segment.fromStationName} — {segment.toStationName}
+                                  </strong>
+                                </div>
+
+                                <Button
+                                  variant={alreadySelected ? 'outline-danger' : 'warning'}
+                                  size="sm"
+                                  onClick={() =>
+                                    alreadySelected
+                                      ? handleRemoveSegment(segment)
+                                      : handleAddSegment(segment)
+                                  }
+                                >
+                                  {alreadySelected ? 'Remove' : 'Add'}
+                                </Button>
+                              </Card.Body>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <Alert variant="secondary" className="mb-0">
+                        No segments available.
+                      </Alert>
+                    )}
+                  </Card.Body>
+                </Card>
+              </Col>
+
+              {/* Current Route */}
+              <Col lg={5}>
+                <Card bg="dark" text="light">
+                  <Card.Body>
+                    <Card.Title className="mb-3">Current Route</Card.Title>
+
+                    {selectedSegments.length > 0 ? (
+                      <ListGroup variant="flush">
+                        {selectedSegments.map((segment, index) => (
+                          <ListGroup.Item
+                            key={index}
+                            className="d-flex justify-content-between align-items-center"
+                          >
+                            <span>
+                              {index + 1}. {segment.fromStationName} — {segment.toStationName}
+                            </span>
+                          </ListGroup.Item>
+                        ))}
+                      </ListGroup>
+                    ) : (
+                      <Alert variant="secondary" className="mb-0">
+                        No segments selected yet.
+                      </Alert>
+                    )}
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          </Container>
+          
+        )
+      }
+
+      {/* Go to planning phase */}
+      {phase === 'setup' && (
+        <div className="d-flex justify-content-center mt-5 mb-3">
+        <Button 
+          variant="warning" 
+          size="lg" 
+          className="px-5 rounded-pill shadow-sm fw-bold"
+          onClick={() => setPhase('planning')}
+        >
+          Start Planning
+        </Button>
+      </div>
+      ) 
+    }
       
+
     </Container>
   )
 }
