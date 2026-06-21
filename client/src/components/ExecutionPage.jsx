@@ -182,6 +182,15 @@ function ExecutionPage(props) {
                             <Alert variant="success" className="py-4 shadow-sm mb-4">
                                 <h3 className="mb-2">Final Score</h3>
                                 <h1 className="display-1 fw-bold text-success mb-0">{submitResult.finalScore}</h1>
+
+                                {submitResult.isNewBestScore && (
+                                    <div className="mt-3">
+                                        <Badge bg="warning" text="dark" className="fs-5 px-4 py-2 rounded-pill shadow-sm">
+                                            <i className="bi bi-trophy-fill me-2 text-danger"></i>
+                                            New Personal Best!
+                                        </Badge>
+                                    </div>
+                                )}
                             </Alert>
 
                             <div className="d-flex justify-content-center gap-3 flex-wrap">

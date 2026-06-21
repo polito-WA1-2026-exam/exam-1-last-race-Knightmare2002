@@ -1,6 +1,6 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
-import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 import { getUserByUsername, getUserById } from '../dao/usersDAO.js';
 
 passport.use(new LocalStrategy(async (username, password, done) => {
@@ -11,7 +11,14 @@ passport.use(new LocalStrategy(async (username, password, done) => {
       return done(null, false, { message: 'Incorrect username or password.' })
     }
 
-    const match = await bcrypt.compare(password, user.hash)
+    const hashedPassword = await new Promise((resolve, reject) => {
+      crypto.scrypt(password, user.salt, 32, (err, derivedKey) => {
+        if (err) reject(err)
+        resolve(derivedKey)
+      })
+    })
+
+    const match = crypto.timingSafeEqual(Buffer.from(user.hash, 'hex'), hashedPassword)
 
     if (!match) {
       return done(null, false, { message: 'Incorrect username or password.' })

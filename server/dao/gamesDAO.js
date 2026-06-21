@@ -114,6 +114,17 @@ async function saveQuittedGame(gameId) {
   await run(sql, [gameId])
 }
 
+async function getUserBestScore(userId) {
+  const sql = `
+    SELECT MAX(final_score) AS best_score
+    FROM games
+    WHERE user_id = ? AND status = 'completed'
+  `
+  const result = await get(sql, [userId])
+  
+  return result.best_score !== null ? result.best_score : 0
+}
+
 export {
   createGame,
   getGameById,
@@ -123,5 +134,6 @@ export {
   clearGameSteps,
   getRandomEvent,
   getRanking,
-  saveQuittedGame
+  saveQuittedGame,
+  getUserBestScore
 }

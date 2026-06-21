@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import sqlite3 from 'sqlite3';
-import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -35,10 +35,10 @@ async function init() {
     const schema = fs.readFileSync(schemaPath, 'utf8');
     await new Promise((resolve, reject) => {
       db.exec(schema, (err) => {
-        if (err) reject(err);
-        else resolve();
-      });
-    });
+        if (err) reject(err)
+        else resolve()
+      })
+    })
 
     //At least 3 users
     const users = [
@@ -48,12 +48,21 @@ async function init() {
     ];
 
     for (const u of users) {
-      const hash = await bcrypt.hash(u.password, 10);
+      const salt = crypto.randomBytes(16).toString('hex')
+      
+      const hashBuffer = await new Promise((resolve, reject) => {
+        crypto.scrypt(u.password, salt, 32, (err, derivedKey) => {
+          if (err) reject(err)
+          resolve(derivedKey)
+        })
+      })
+      const hash = hashBuffer.toString('hex')
+      
       await run(
         db,
-        'INSERT INTO users(username, name, hash) VALUES (?, ?, ?)',
-        [u.username, u.name, hash]
-      );
+        'INSERT INTO users(username, name, hash, salt) VALUES (?, ?, ?, ?)',
+        [u.username, u.name, hash, salt]
+      )
     }
 
     const stations = [

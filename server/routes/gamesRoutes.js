@@ -16,7 +16,8 @@ import {
   clearGameSteps,
   getRandomEvent,
   getRanking,
-  saveQuittedGame
+  saveQuittedGame,
+  getUserBestScore
 } from '../dao/gamesDAO.js';
 import {
   buildGraph,
@@ -186,12 +187,15 @@ router.post('/games/:id/submit-route', isLoggedIn, async (req, res) => {
     }
 
     const finalScore = Math.max(0, coins)
+    const currentBest = await getUserBestScore(req.user.id)
+    const isNewBestScore = finalScore > currentBest && finalScore > 0
     await saveCompletedGame(gameId, finalScore)
 
     res.json({
       valid: true,
       steps,
-      finalScore
+      finalScore,
+      isNewBestScore
     })
   } catch (err) {
     console.error('submit-route error:', err)
