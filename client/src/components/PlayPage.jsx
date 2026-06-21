@@ -1,21 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Container, Spinner, Alert, Card, Row, Col, Badge, ListGroup, Button } from 'react-bootstrap';
 import gameAPI from '../API/gameAPI';
 
 import ExecutionPage from './ExecutionPage';
 
 function PlayPage() {
-  const [game, setGame] = useState(null);
-  const [planningData, setPlanningData] = useState(null);
-  const [networkMap, setNetworkMap] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [errorMsg, setErrorMsg] = useState('');
-  const [phase, setPhase] = useState('setup');
-  const [selectedSegments, setSelectedSegments] = useState([]);
-  const [submitResult, setSubmitResult] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(null);
+const [game, setGame] = useState(null);
+const [planningData, setPlanningData] = useState(null);
+const [networkMap, setNetworkMap] = useState(null);
+const [loading, setLoading] = useState(true);
+const [errorMsg, setErrorMsg] = useState('');
+const [phase, setPhase] = useState('setup');
+const [selectedSegments, setSelectedSegments] = useState([]);
+const [submitResult, setSubmitResult] = useState(null);
+const [submitting, setSubmitting] = useState(false);
+const [timeLeft, setTimeLeft] = useState(null);
 
+const initialized = useRef(false);
 
 {/* Starting the game */}
 const fetchGameData = async () => {
@@ -37,7 +38,11 @@ const fetchGameData = async () => {
 
   //Botstraping game
   useEffect(() => {
-    fetchGameData()
+    if (!initialized.current){
+      initialized.current = true
+      fetchGameData()
+    }
+    
   }, [])
 
   // "Create New Game" Button function
