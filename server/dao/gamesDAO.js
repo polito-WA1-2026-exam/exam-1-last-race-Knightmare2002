@@ -105,6 +105,15 @@ async function getRanking() {
   return await all(sql)
 }
 
+async function saveQuittedGame(gameId) {
+  const sql = `
+    UPDATE games
+    SET status = 'quitted'
+    WHERE id = ?
+  `
+  await run(sql, [gameId])
+}
+
 export {
   createGame,
   getGameById,
@@ -113,5 +122,6 @@ export {
   saveGameStep,
   clearGameSteps,
   getRandomEvent,
-  getRanking
+  getRanking,
+  saveQuittedGame
 }

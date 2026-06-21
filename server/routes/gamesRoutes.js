@@ -15,7 +15,8 @@ import {
   saveGameStep,
   clearGameSteps,
   getRandomEvent,
-  getRanking
+  getRanking,
+  saveQuittedGame
 } from '../dao/gamesDAO.js';
 import {
   buildGraph,
@@ -205,6 +206,28 @@ router.get('/ranking', isLoggedIn, async (req, res) => {
     res.json(ranking)
   } catch (err) {
     res.status(500).json({ error: 'Failed to load ranking' })
+  }
+})
+
+//Quits the game
+router.post('/games/:id/quit', isLoggedIn, async (req, res) => {
+  try {
+    const gameId = Number(req.params.id)
+    if (Number.isNaN(gameId)) {
+      return res.status(400).json({ error: 'Invalid game id' })
+    }
+
+    const game = await getGameById(gameId)
+    if (!game || game.user_id !== req.user.id) {
+      return res.status(404).json({ error: 'Game not found' })
+    }
+
+    await saveQuittedGame(gameId)
+    
+    res.json({ message: 'Game quitted successfully' })
+  } catch (err) {
+    console.error('quit-game error:', err)
+    res.status(500).json({ error: 'Failed to quit game', details: err.message })
   }
 })
 

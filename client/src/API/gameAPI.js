@@ -46,12 +46,22 @@ async function submitRoute(gameId, routeStationIds) {
   return getJson(response);
 }
 
+async function quitGame(gameId) {
+  const response = await fetch(`${SERVER_URL}/api/games/${gameId}/quit`, {
+    method: 'POST',
+    credentials: 'include'
+  })
+
+  return getJson(response)
+}
+
 const gameAPI = {
     getRanking,
     createGame,
     getPlanningData,
     getNetworkMap,
-    submitRoute
+    submitRoute,
+    quitGame
 }
 
 export default gameAPI

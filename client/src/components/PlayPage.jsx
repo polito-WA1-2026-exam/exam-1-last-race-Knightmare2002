@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router';
 import { useEffect, useState, useRef } from 'react';
 import { Container, Spinner, Alert, Card, Row, Col, Badge, ListGroup, Button } from 'react-bootstrap';
 import gameAPI from '../API/gameAPI';
@@ -17,6 +18,7 @@ const [submitting, setSubmitting] = useState(false);
 const [timeLeft, setTimeLeft] = useState(null);
 
 const initialized = useRef(false);
+const navigate = useNavigate();
 
 {/* Starting the game */}
 const fetchGameData = async () => {
@@ -181,6 +183,20 @@ useEffect(() => {
     }
   }
 
+  {/* Quit Game */}
+  const handleQuitGame = async () => {
+    if (window.confirm("Are you sure you want to quit? This game will be marked as quitted.")) {
+      if (game?.gameId) {
+        try {
+          await gameAPI.quitGame(game.gameId);
+        } catch (err) {
+          console.error("Failed to mark game as quitted on server", err)
+        }
+      }
+      navigate('/home')
+    }
+  }
+
   {/* Obtain stations name */}
   const getStationName = (id) => {
     if (!networkMap?.stations) return id
@@ -213,10 +229,23 @@ useEffect(() => {
       
       {/* Header */}
       <Container>
-        <p className="text-uppercase text-muted fw-bold mb-1" style={{ letterSpacing: '1px' }}>
-        Phase 01 / 02
-        </p>
-        <h1 className="display-5 fw-bold mb-4">Game Loaded</h1>
+        <div className="d-flex justify-content-between align-items-start">
+          <div>
+              <p className="text-uppercase text-muted fw-bold mb-1" style={{ letterSpacing: '1px' }}>
+              Phase 01 / 02
+              </p>
+              <h1 className="display-5 fw-bold mb-4">Game Loaded</h1>
+            </div>
+
+            <Button 
+              variant="outline-danger" 
+              className="fw-bold rounded-pill shadow-sm px-4 mt-2"
+              onClick={handleQuitGame}
+            >
+                Quit Game
+            </Button>
+          </div>
+
         <h3 className="text-secondary mb-4">
           Study the complete network before moving to the planning phase.
         </h3>
