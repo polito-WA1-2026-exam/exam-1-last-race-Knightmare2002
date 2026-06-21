@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router';
 import { useState, useEffect, useContext } from 'react';
 import { NavLink, useNavigate } from 'react-router';
 import { Navbar, Nav, Button, Container } from 'react-bootstrap';
@@ -6,6 +7,7 @@ import { AuthContext } from '../context/AuthContext';
 function NavigationBar() {
   const { isLoggedIn, user, logOut } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
   
   const [isDarkMode, setIsDarkMode] = useState(true);
 
@@ -27,13 +29,17 @@ function NavigationBar() {
     setIsDarkMode(prevMode => !prevMode);
   }
 
+  if (location.pathname === '/play'){
+    return null
+  }
+
   return (
-    <Navbar expand="md" className="topbar shadow-sm">
+    <Navbar expand="md" className="topbar shadow-sm py-3">
       
       <Container fluid className="px-4 px-lg-5">
         
         <Navbar.Brand as={NavLink} to="/" className="brand fw-bold d-flex align-items-center gap-2">
-          <i className="bi bi-train-freight-front fs-4 text-primary"></i>
+          <i className="bi bi-train-freight-front fs-1 text-primary"></i>
           Race the Rails
         </Navbar.Brand>
         
@@ -43,8 +49,7 @@ function NavigationBar() {
           
           <Nav className="mx-auto my-2 my-md-0 d-flex justify-content-center">
             <Button 
-              variant={isDarkMode ? "outline-light" : "outline-dark"} 
-              size="sm" 
+              variant={isDarkMode ? "outline-light" : "outline-dark"}  
               className="rounded-pill px-3"
               onClick={toggleTheme}
               title="Toggle Dark Mode"
@@ -53,7 +58,7 @@ function NavigationBar() {
             </Button>
           </Nav>
 
-          <Nav className="ms-auto align-items-center topnav">
+          <Nav className="ms-auto align-items-center topnav fs-4">
             {isLoggedIn ? (
               <>
                 <Nav.Link as={NavLink} to="/leaderboard">Leaderboard</Nav.Link>

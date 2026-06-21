@@ -33,32 +33,31 @@ function LoginPage() {
   }
 
   return (
-    <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '70vh' }}>
+    <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
       
-      <Card className="shadow-sm" style={{ width: '100%', maxWidth: '400px' }}>
-        <Card.Header className="bg-white pb-0 border-bottom-0">
-          <Nav variant="tabs" defaultActiveKey="#login">
-            <Nav.Item>
-              <Nav.Link href="#login" active className="fw-bold">Log In</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link disabled>Register</Nav.Link>
-            </Nav.Item>
-          </Nav>
-        </Card.Header>
+      <Card className="shadow-lg border-0 bg-light" style={{ width: '100%', maxWidth: '420px', borderRadius: '1.25rem' }}>
+        <Card.Body className="p-5">
+          
+          {/* Header con Icona e Titolo */}
+          <div className="text-center mb-5">
+            <i className="bi bi-train-freight-front text-primary" style={{ fontSize: '3.5rem' }}></i>
+            <h2 className="fw-bold mt-2 mb-1">Welcome Back</h2>
+            <p className="text-muted small">Enter your credentials to access the game.</p>
+          </div>
 
-        <Card.Body className="p-4 pt-3">
           <Form onSubmit={handleSubmit}>
             
-            <Form.Group className="mb-3" controlId="loginUsername">
+            <Form.Group className="mb-4" controlId="loginUsername">
               <Form.Label className="text-muted fw-bold" style={{ fontSize: '0.85rem', letterSpacing: '1px' }}>
                 USERNAME
               </Form.Label>
               <Form.Control
                 type="text"
+                size="lg"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="your_username"
+                placeholder="player"
+                className="bg-white"
                 autoFocus
               />
             </Form.Group>
@@ -69,33 +68,35 @@ function LoginPage() {
               </Form.Label>
               <Form.Control
                 type="password"
+                size="lg"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="********"
+                placeholder="••••••••"
+                className="bg-white"
               />
             </Form.Group>
 
-            
             {errorMsg && (
-              <Alert variant="danger" className="py-2 text-center">
+              <Alert variant="danger" className="py-2 text-center rounded">
                 {errorMsg}
               </Alert>
             )}
 
             <Button 
               type="submit" 
-              variant="primary" 
-              className="w-100 fw-bold" 
+              variant="warning" 
+              className="w-100 fw-bold text-dark rounded-pill mt-3 shadow-sm" 
               size="lg"
               disabled={loading}
+              style={{ letterSpacing: '1px' }}
             >
               {loading ? (
                 <>
                   <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
-                  Logging in...
+                  LOGGING IN...
                 </>
               ) : (
-                'Log In'
+                'LOG IN'
               )}
             </Button>
 

@@ -101,6 +101,10 @@ function ExecutionPage(props) {
                             <Button variant="dark" size="lg" className="px-4 rounded-pill shadow-sm fw-bold" onClick={() => navigate('/leaderboard')}>
                                 Leaderboard
                             </Button>
+
+                            <Button variant="secondary" size="lg" className="px-4 rounded-pill shadow-sm fw-bold" onClick={() => navigate('/')}>
+                                Back to Home
+                            </Button>
                         </div>
                     </Card.Body>
                 </Card>
@@ -191,6 +195,10 @@ function ExecutionPage(props) {
 
                                 <Button variant="dark" size="lg" className="px-4 rounded-pill shadow-sm fw-bold" onClick={() => navigate('/leaderboard')}>
                                     Leaderboard
+                                </Button>
+
+                                <Button variant="secondary" size="lg" className="px-4 rounded-pill shadow-sm fw-bold" onClick={() => navigate('/')}>
+                                    Back to Home
                                 </Button>
                             </div>
                         </Card.Body>
