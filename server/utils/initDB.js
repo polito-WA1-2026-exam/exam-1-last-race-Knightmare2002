@@ -12,6 +12,7 @@ const schemaPath = path.join(__dirname, '../database/schema.sql');
 
 const db = new sqlite3.Database(dbPath);
 
+// Run a query (no rows)
 function run(db, sql, params = []) {
   return new Promise((resolve, reject) => {
     db.run(sql, params, function (err) {
@@ -21,6 +22,7 @@ function run(db, sql, params = []) {
   });
 }
 
+// Run a query (row returned)
 function get(db, sql, params = []) {
   return new Promise((resolve, reject) => {
     db.get(sql, params, (err, row) => {
@@ -30,6 +32,7 @@ function get(db, sql, params = []) {
   });
 }
 
+// Initialize Database
 async function init() {
   try {
     const schema = fs.readFileSync(schemaPath, 'utf8');
@@ -45,7 +48,7 @@ async function init() {
       { username: 'samuele', name: 'Samuele', password: 'SamuCar02' },
       { username: 'diana', name: 'Diana', password: 'didi03' },
       { username: 'franco', name: 'Francesco', password: 'FrancoCar04' }
-    ];
+    ]
 
     for (const u of users) {
       const salt = crypto.randomBytes(16).toString('hex')
@@ -65,6 +68,7 @@ async function init() {
       )
     }
 
+    //At least 12 stations
     const stations = [
         'Cadorna', 
         'Duomo', 
@@ -107,7 +111,6 @@ async function init() {
       lineMap[line.name] = row.id;
     }
 
-    //Just for understanding
     const network = {
       'M1': ['Cadorna', 'Duomo', 'Cairoli', 'San Babila'],
       'M2': ['Cadorna', 'Centrale FS', 'Garibaldi FS', 'Sant\'Ambrogio'],
@@ -126,6 +129,7 @@ async function init() {
       }
     }
 
+    // At least 8 events
     const events = [
         ['Attention, pickpockets', -4],
         ['Catched without ticket', -3],

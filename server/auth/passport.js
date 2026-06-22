@@ -34,10 +34,12 @@ passport.use(new LocalStrategy(async (username, password, done) => {
   }
 }))
 
+// Saving session cookie
 passport.serializeUser((user, done) => {
   done(null, user.id)
 })
 
+// Using session cookie
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await getUserById(id)

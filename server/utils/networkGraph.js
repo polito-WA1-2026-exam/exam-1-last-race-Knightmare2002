@@ -82,18 +82,23 @@ function normalizeSegmentKey(a, b) {
 
 //Validation function
 function validateRoute(routeStationIds, segments, interchangeStationIds, startId, destinationId) {
+
+  // User didn't add any segment
   if (!Array.isArray(routeStationIds) || routeStationIds.length < 2) {
     return { valid: false, reason: 'Route must contain at least 2 stations' }
   }
 
+  // User didn't choose the right initial station
   if (routeStationIds[0] !== startId) {
     return { valid: false, reason: 'Route must start from assigned start station' }
   }
 
+  // User didn't choose the right destination station
   if (routeStationIds[routeStationIds.length - 1] !== destinationId) {
     return { valid: false, reason: 'Route must end at assigned destination station' }
   }
 
+  // {key: [{l_id, l_name, from, to}]}
   const segmentMap = new Map()
   for (const seg of segments) {
     const key = normalizeSegmentKey(seg.from_station_id, seg.to_station_id)
@@ -108,16 +113,19 @@ function validateRoute(routeStationIds, segments, interchangeStationIds, startId
     const from = routeStationIds[i]
     const to = routeStationIds[i + 1]
     const key = normalizeSegmentKey(from, to)
-
+    
+    // Segment already used
     if (usedSegments.has(key)) {
       return { valid: false, reason: 'A segment cannot be used more than once' }
     }
 
+    // Non existing segment 
     const matchingSegments = segmentMap.get(key)
     if (!matchingSegments || matchingSegments.length === 0) {
       return { valid: false, reason: 'Route contains a non-existing segment' }
     }
 
+    // Cannot change lane unless it uses an interchange station
     let chosenSegment = matchingSegments[0]
 
     if (previousLineId !== null) {
