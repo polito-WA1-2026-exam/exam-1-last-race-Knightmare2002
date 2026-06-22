@@ -8,11 +8,15 @@ import HomePage from './components/HomePage';
 import LeaderboardPage from './components/LeaderboardPage';
 import PlayPage from './components/PlayPage';
 import NotFoundPage from './components/NotFoundPage';
+import { useState } from 'react';
 
 function App() {
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const toggleTheme = () => setIsDarkMode(!isDarkMode)
+
   return (
     <Routes>
-      <Route element={<AppLayout />}>
+      <Route element={<AppLayout isDarkMode={isDarkMode} toggleTheme={toggleTheme}/>}>
         <Route index element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route

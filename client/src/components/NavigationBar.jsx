@@ -4,29 +4,17 @@ import { NavLink, useNavigate } from 'react-router';
 import { Navbar, Nav, Button, Container } from 'react-bootstrap';
 import { AuthContext } from '../context/AuthContext';
 
-function NavigationBar() {
+function NavigationBar(props) {
+  const isDarkMode = props.isDarkMode
+  const toggleTheme = props.toggleTheme
+
   const { isLoggedIn, user, logOut } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
-  
-  const [isDarkMode, setIsDarkMode] = useState(true);
-
-  useEffect(() => {
-    if (isDarkMode) {
-      document.body.classList.add('dark-theme')
-    } else {
-      document.body.classList.remove('dark-theme')
-    }
-  }, [isDarkMode])
 
   const handleLogout = async () => {
     await logOut()
     navigate('/')
-  }
-
-  
-  const toggleTheme = () => {
-    setIsDarkMode(prevMode => !prevMode);
   }
 
   if (location.pathname === '/play'){

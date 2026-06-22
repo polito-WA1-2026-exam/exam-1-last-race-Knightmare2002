@@ -2,10 +2,13 @@ import { Outlet } from 'react-router';
 import { Container } from 'react-bootstrap';
 import NavigationBar from './NavigationBar';
 
-function AppLayout() {
+function AppLayout(props) {
+  const isDarkMode = props.isDarkMode
+  const toggleTheme = props.toggleTheme
+
   return (
-    <div className="app-shell d-flex flex-column min-vh-100">
-      <NavigationBar />
+    <div className={`app-shell d-flex flex-column min-vh-100 ${isDarkMode ? 'dark-theme' : ''}`}>
+      <NavigationBar isDarkMode={isDarkMode} toggleTheme={toggleTheme}/>
       
       <Container as="main" className="page-shell flex-grow-1 py-4">
         <Outlet />
