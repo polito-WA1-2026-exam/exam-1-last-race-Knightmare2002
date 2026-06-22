@@ -245,10 +245,16 @@ useEffect(() => {
                 Quit Game
             </Button>
           </div>
-
-        <h3 className="text-secondary mb-4">
-          Study the complete network before moving to the planning phase.
-        </h3>
+        {phase === 'setup' ? (
+          <h3 className="text-secondary mb-4">
+            Study the complete network before moving to the planning phase.
+          </h3>
+        ) : (
+          <h3 className="text-secondary mb-4">
+            Good Luck!
+          </h3>
+        )}
+        
 
         {phase === 'setup' ? (
           <Badge bg="primary" pill className="px-3 py-2 shadow-sm fs-6 mb-3">
