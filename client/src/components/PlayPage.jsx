@@ -323,20 +323,8 @@ useEffect(() => {
                     <Card key={line.id} className="border-0 shadow-sm bg-white">
                       <Card.Body>
                         <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-                          <strong className="fs-5">{line.name}</strong>
+                          <strong className="fs-5" style={{ color: line.color }}>{line.name}</strong>
 
-                          {line.color && (
-                            <Badge
-                              pill
-                              style={{
-                                backgroundColor: line.color,
-                                color: '#fff', 
-                                textShadow: '0 0 2px rgba(0,0,0,0.5)' 
-                              }}
-                            >
-                              {line.color}
-                            </Badge>
-                          )}
                         </div>
 
                         <div className="text-muted small lh-lg">

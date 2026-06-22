@@ -246,5 +246,21 @@
 - `username`: franco, `password`: FrancoCar04
 
 ## Use of AI Tools
-Briefly describe whether you used any AI tools (e.g., ChatGPT, GitHub Copilot, Claude) while working on this project, for which purposes (e.g., clarifying concepts, debugging, generating code), and how you verified or adapted their output.
-If you did not use any AI tools, simply state so.
+During the development of this project, I utilized AI tools (specifically **Gemini**) to assist with several technical and design tasks. My workflow involved using AI as a supportive pair-programmer.
+
+- **Styling and UI/UX**: I used AI to generate and refine the styling of the application. This helped in achieving a more polished and professional interface.
+
+- **Database Schema & SQL**: I leveraged AI to structure and initialize the SQL database schemas and the initial data population script (`initDB.js`), ensuring that the tables were correctly normalized and indexed.
+
+- **Graph & BFS**: I consulted AI to implement the graph construction and the Breadth-First Search (BFS) logic. While the overarching logic and algorithmic strategy were my own ideas, the AI helped in writing the standard implementation, which I then reviewed and integrated into the project.
+
+- **Best Practises & Robustness**: I frequently asked for advice on code best practices and how to implement more robust error handling and validation logic, ensuring the backend endpoints were secure and the frontend was resilient.
+
+- **Dark Mode implementation**: The initial concept for the dark mode was my own. The AI provided an implementation that manipulated the DOM directly; however, I recognized this as a bad practice in the context of React (plus it was explicitly asked to avoid this practise in the exam instructions). I adapted the suggested solution to use React state and CSS classes instead, aligning with the declarative nature of React.
+
+- **React Hooks**:
+  - `useRef`: I utilized AI to understand and implement `useRef` for the game initialization phase, ensuring that the game data is fetched exactly once upon component mounting, avoiding redundant network requests.
+
+  - `useLocation`: I used this hook to access the current routing path, which allowed me to conditionally hide the `NavigationBar` during the specific `/play` route.
+
+- **Troubleshooting & Debugging**: AI served as a valuable tool to accelerate troubleshooting during development. However, I noted that AI can occasionally become confused by complex or longer project states; in those instances, I performed manual debugging to verify and correct the outputs, ensuring the final code was fully functional and logic-compliant.
